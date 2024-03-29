@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDiaryDto } from './dto/create-diary.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Diary } from 'src/entity/diary.entity';
+import { Repository } from 'typeorm';
 import { UpdateDiaryDto } from './dto/update-diary.dto';
 
 @Injectable()
 export class DiaryService {
-  create(createDiaryDto: CreateDiaryDto) {
-    return 'This action adds a new diary';
-  }
+  constructor(
+    @InjectRepository(Diary)
+    private readonly diaryRepository: Repository<Diary>,
+  ) {}
 
-  findAll() {
-    return `This action returns all diary`;
+  async findAll() {
+    const diaries = await this.diaryRepository
+      .createQueryBuilder('diary')
+      .leftJoinAndSelect('diary.user', 'user')
+      .leftJoinAndSelect('diary.report', 'report')
+      .select([
+        'diary.id',
+        'diary.title',
+        'diary.contents',
+        'diary.date',
+        'diary.emotion',
+        'diary.weather',
+        'diary.isWrite',
+        'diary.isPublic',
+        'diary.imageUrl',
+        'diary.createdAt',
+        'user.id',
+        'user.kakaoId',
+        'user.image',
+        'user.nickname',
+        'user.gender',
+        'user.birth',
+        'user.waring',
+        'user.createdAt',
+        'COUNT(report.id) AS reportCount',
+      ])
+      .groupBy('diary.id')
+      .getRawMany();
+
+    return diaries;
   }
 
   findOne(id: number) {
     return `This action returns a #${id} diary`;
-  }
-
-  update(id: number, updateDiaryDto: UpdateDiaryDto) {
-    return `This action updates a #${id} diary`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} diary`;
   }
 }
