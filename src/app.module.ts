@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AdminModule } from './admin/admin.module';
 import { ConfigModule } from '@nestjs/config';
+import { DiaryModule } from './diary/diary.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
     }),
     DatabaseModule,
     AdminModule,
+    DiaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
