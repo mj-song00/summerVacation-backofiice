@@ -1,7 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Admin } from 'src/admin/entities/admin.entity';
+import { Admin } from 'src/entity/admin.entity';
+import { Diary } from 'src/entity/diary.entity';
+import { Emotion } from 'src/entity/emotion.like.entity';
+import { Image } from 'src/entity/image.entity';
+import { Like } from 'src/entity/like.entity';
+import { BookMark } from 'src/entity/mark.entity';
+import { Report } from 'src/entity/report.entity';
+import { UserEntity } from 'src/entity/user.entity';
 
 @Module({
   imports: [
@@ -13,7 +20,16 @@ import { Admin } from 'src/admin/entities/admin.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [Admin],
+        entities: [
+          Admin,
+          Diary,
+          Emotion,
+          Image,
+          Like,
+          BookMark,
+          Report,
+          UserEntity,
+        ],
         synchronize: true,
       }),
       inject: [ConfigService],

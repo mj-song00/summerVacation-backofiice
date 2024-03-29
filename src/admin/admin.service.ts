@@ -2,8 +2,8 @@ import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateAdminDto } from './dto/create-admin.dto';
-import { Admin } from './entities/admin.entity';
 import * as bcrypt from 'bcrypt';
+import { Admin } from 'src/entity/admin.entity';
 
 @Injectable()
 export class AdminService {
