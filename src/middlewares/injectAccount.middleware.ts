@@ -6,7 +6,7 @@ import {
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { ROLE, TOKEN_TYPE } from 'src/admin/admin.enum';
-import { Admin } from 'src/admin/entities/admin.entity';
+import { Admin } from 'src/entity/admin.entity';
 
 import { EntityManager } from 'typeorm';
 

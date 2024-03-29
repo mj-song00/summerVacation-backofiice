@@ -1,4 +1,4 @@
-import { Admin } from 'src/admin/entities/admin.entity';
+import { Admin } from 'src/entity/admin.entity';
 
 declare module 'express' {
   interface Request {
