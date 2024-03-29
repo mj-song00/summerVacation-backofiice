@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { DiaryService } from './diary.service';
-import { DiaryController } from './diary.controller';
+import { DiaryService } from './user.service';
+import { DiaryController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Diary } from 'src/entity/diary.entity';
 
@@ -9,4 +9,4 @@ import { Diary } from 'src/entity/diary.entity';
   providers: [DiaryService],
   imports: [TypeOrmModule.forFeature([Diary])],
 })
-export class DiaryModule {}
+export class UserModule {}
