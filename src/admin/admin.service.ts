@@ -19,7 +19,7 @@ export class AdminService {
     const salt = parseInt(process.env.SATL);
     const hashedPassword = await bcrypt.hash(password, salt);
     try {
-      const admin = this.adminRepository.save({
+      const admin = await this.adminRepository.save({
         email,
         password: hashedPassword,
       });
