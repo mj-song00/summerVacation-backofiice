@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { CreateDiaryDto } from './dto/create-diary.dto';
-import { UpdateDiaryDto } from './dto/update-diary.dto';
+import { Injectable, BadRequestException, HttpStatus } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Diary } from 'src/entity/diary.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class DiaryService {
-  create(createDiaryDto: CreateDiaryDto) {
-    return 'This action adds a new diary';
-  }
+  constructor(
+    @InjectRepository(Diary)
+    private readonly diaryRepository: Repository<Diary>,
+  ) {}
+  async findAllDiaries(userId: number, year: string, month: string) {
+    const diaries = await this.diaryRepository
+      .createQueryBuilder('diary')
+      .where('diary.userId = :userId', { userId })
+      .andWhere('YEAR(diary.date) = :year', { year })
+      .andWhere('MONTH(diary.date) = :month', { month })
+      .orderBy('diary.createdAt', 'DESC')
+      .getRawMany();
 
-  findAll() {
-    return `This action returns all diary`;
+    if (diaries.length === 0)
+      throw new BadRequestException('please check userId, year and month');
+
+    return { statusCode: HttpStatus.OK, message: 'success', data: diaries };
   }
 
   findOne(id: number) {
     return `This action returns a #${id} diary`;
-  }
-
-  update(id: number, updateDiaryDto: UpdateDiaryDto) {
-    return `This action updates a #${id} diary`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} diary`;
   }
 }

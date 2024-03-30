@@ -20,7 +20,7 @@ export class UserController {
   }
 
   @Get('')
-  // @Roles(ROLE.USER)
+  @Roles(ROLE.USER)
   findOne(
     @Query('nickname') nickname: string,
     @Query('kakaoId') kakaoId?: string,
