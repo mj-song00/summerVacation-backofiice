@@ -7,37 +7,47 @@ import {
 } from '@nestjs/common';
 import { ROLE } from 'src/admin/admin.enum';
 import { Roles } from 'src/decorators/roles.decorator';
-import { DiaryService } from './user.service';
+import { UserService } from './user.service';
 
-@Controller('diary')
-export class DiaryController {
-  constructor(private readonly diaryService: DiaryService) {}
+@Controller('user')
+export class UserController {
+  constructor(private readonly userService: UserService) {}
 
   @Get('/info')
   @Roles(ROLE.USER)
   findAll() {
-    return this.diaryService.findAll();
+    return this.userService.findAll();
   }
 
   @Get('')
+  // @Roles(ROLE.USER)
   findOne(
     @Query('nickname') nickname: string,
     @Query('kakaoId') kakaoId?: string,
+    @Query('gender') gender?: string,
+    @Query('field') field?: string,
+    @Query('start') start?: string,
+    @Query('end') end?: string,
+    @Query('waring') waring?: string,
   ) {
     if (nickname) {
       // 닉네임만 제공되었을 때
-      return this.diaryService.findByNickname(nickname);
-    } else if (kakaoId) {
-      // 닉네임만 제공되었을 때
-      return this.diaryService.findByNickname(nickname);
+      return this.userService.findByNickname(nickname);
     } else if (kakaoId) {
       // 카카오 ID만 제공되었을 때
-      return this.diaryService.findByKakaoId(kakaoId);
+      return this.userService.findByKakaoId(kakaoId);
+    } else if (gender) {
+      //성별
+      return this.userService.findByGender(gender);
+      //가입일 or 출생년도
+    } else if (start && end) {
+      return this.userService.findByDate(field, start, end);
+    } else if (waring) {
+      //경고 횟수
+      return this.userService.findByWaringCount(+waring, field);
     } else {
-      // 닉네임과 카카오 ID가 모두 제공되지 않았을 때
-      throw new BadRequestException(
-        'Neither nickname nor kakaoId is provided.',
-      );
+      // 입력된 정보가 없을때
+      throw new BadRequestException('infomation is not provided.');
     }
   }
 }
