@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Diary } from 'src/entity/diary.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 @Injectable()
 export class DiaryService {
@@ -24,7 +24,14 @@ export class DiaryService {
     return { statusCode: HttpStatus.OK, message: 'success', data: diaries };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} diary`;
+  async findByContents(contents: string) {
+    const diaries = await this.diaryRepository.find({
+      where: { contents: Like(`%${contents}`) },
+    });
+    if (diaries.length === 0)
+      throw new BadRequestException('please check contents');
+    return { statusCode: HttpStatus.OK, message: 'success', data: diaries };
   }
+
+  async findByType(type: string) {}
 }

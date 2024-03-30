@@ -23,8 +23,12 @@ export class DiaryController {
     return this.diaryService.findAllDiaries(+userId, year, month);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.diaryService.findOne(+id);
+  @Get('')
+  findOne(@Query('contents') contents?: string, @Query('type') type?: string) {
+    if (contents) {
+      return this.diaryService.findByContents(contents);
+    } else if (type) {
+      return this.diaryService.findByType(type);
+    }
   }
 }
