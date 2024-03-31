@@ -38,7 +38,7 @@ export class DiaryController {
       return this.diaryService.findByContents(contents);
     } else if (waringCount) {
       // 신고 횟수 검색
-      return this.diaryService.findBywaringCount(+waringCount, field);
+      return this.diaryService.findByWaringCount(+waringCount, field);
     }
   }
 }
