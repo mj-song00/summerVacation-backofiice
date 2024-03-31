@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService, ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Admin } from 'src/entity/admin.entity';
 import { Diary } from 'src/entity/diary.entity';
@@ -13,6 +13,7 @@ import { UserEntity } from 'src/entity/user.entity';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
         host: configService.get('DB_HOST'),
@@ -31,7 +32,6 @@ import { UserEntity } from 'src/entity/user.entity';
           UserEntity,
         ],
         synchronize: true,
-        logging: true,
       }),
       inject: [ConfigService],
     }),
