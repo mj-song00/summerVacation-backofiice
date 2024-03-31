@@ -31,6 +31,7 @@ import { UserEntity } from 'src/entity/user.entity';
           UserEntity,
         ],
         synchronize: true,
+        logging: true,
       }),
       inject: [ConfigService],
     }),
