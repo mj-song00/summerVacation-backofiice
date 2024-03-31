@@ -28,11 +28,17 @@ export class DiaryController {
 
   @Get('')
   @Roles(ROLE.USER)
-  findOne(@Query('contents') contents?: string, @Query('type') type?: string) {
+  findOne(
+    @Query('contents') contents?: string,
+    @Query('waringCount') waringCount?: string,
+    @Query('field') field?: string,
+  ) {
     if (contents) {
+      //내용검색
       return this.diaryService.findByContents(contents);
-    } else if (type) {
-      return this.diaryService.findByType(type);
+    } else if (waringCount) {
+      // 신고 횟수 검색
+      return this.diaryService.findBywaringCount(+waringCount, field);
     }
   }
 }

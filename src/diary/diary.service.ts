@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Diary } from 'src/entity/diary.entity';
+import { UserEntity } from 'src/entity/user.entity';
 import { Like, Repository } from 'typeorm';
 
 @Injectable()
@@ -8,6 +9,8 @@ export class DiaryService {
   constructor(
     @InjectRepository(Diary)
     private readonly diaryRepository: Repository<Diary>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
   async findAllDiaries(userId: number, year: string, month: string) {
     const diaries = await this.diaryRepository
@@ -33,5 +36,32 @@ export class DiaryService {
     return { statusCode: HttpStatus.OK, message: 'success', data: diaries };
   }
 
-  async findByType(type: string) {}
+  async findBywaringCount(waringCount: number, field: string) {
+    let query = this.diaryRepository.createQueryBuilder('diary');
+
+    if (field === 'LessThanOrEqual') {
+      query = query.where('diary.waringCount <= :waringCount ', {
+        waringCount,
+      });
+    } else if (field === 'MoreThanOrEqual') {
+      query = query.where('diary.waringCount >= :waringCount ', {
+        waringCount,
+      });
+    } else if (field === 'Equal') {
+      query = query.where('diary.waringCount = :waringCount ', { waringCount });
+    } else {
+      throw new BadRequestException('Invalid field name');
+    }
+
+    const result = await query.getRawMany();
+
+    if (result.length === 0)
+      throw new BadRequestException(`please check field or waring type`);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'success',
+      data: result,
+    };
+  }
 }
