@@ -11,15 +11,15 @@ import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env.local',
-    }),
     DatabaseModule,
     AdminModule,
     UserModule,
     DiaryModule,
     ReportModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env.local',
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
