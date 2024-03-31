@@ -36,7 +36,7 @@ export class DiaryService {
     return { statusCode: HttpStatus.OK, message: 'success', data: diaries };
   }
 
-  async findBywaringCount(waringCount: number, field: string) {
+  async findByWaringCount(waringCount: number, field: string) {
     let query = this.diaryRepository.createQueryBuilder('diary');
 
     if (field === 'LessThanOrEqual') {
