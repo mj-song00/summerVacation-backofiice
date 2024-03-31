@@ -55,6 +55,7 @@ export class UserController {
 
   //유저 경고 추가
   @Post('/waring/:userId')
+  @Roles(ROLE.USER)
   addWaringCount(@Param('userId') userId: string) {
     return this.userService.addWaringCount(userId);
   }
