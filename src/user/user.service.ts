@@ -112,87 +112,111 @@ export class UserService {
   }
 
   async findByDate(field: string, start: string, end: string) {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
+    try {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
 
-    let query = this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.report', 'report')
-      .select([
-        'user.id',
-        'user.kakaoId',
-        'user.image',
-        'user.nickname',
-        'user.gender',
-        'user.birth',
-        'user.waring',
-        'user.createdAt',
-        'COUNT(report.id) AS reportCount',
-      ])
-      .groupBy('user.id');
+      let query = this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.report', 'report')
+        .select([
+          'user.id',
+          'user.kakaoId',
+          'user.image',
+          'user.nickname',
+          'user.gender',
+          'user.birth',
+          'user.waring',
+          'user.createdAt',
+          'COUNT(report.id) AS reportCount',
+        ])
+        .groupBy('user.id');
 
-    if (field === 'createdAt') {
-      query = query.where('user.createdAt BETWEEN :start AND :end', {
-        start: startDate,
-        end: endDate,
-      });
-    } else if (field === 'birth') {
-      query = query.where('user.birth BETWEEN :start AND :end', {
-        start: startDate,
-        end: endDate,
-      });
-    } else {
-      throw new BadRequestException('Invalid field name');
+      if (field === 'createdAt') {
+        query = query.where('user.createdAt BETWEEN :start AND :end', {
+          start: startDate,
+          end: endDate,
+        });
+      } else if (field === 'birth') {
+        query = query.where('user.birth BETWEEN :start AND :end', {
+          start: startDate,
+          end: endDate,
+        });
+      } else {
+        throw new BadRequestException('Invalid field name');
+      }
+
+      const result = await query.getRawMany();
+
+      if (result.length === 0)
+        throw new BadRequestException(`please check start or end type`);
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'success',
+        data: result,
+      };
+    } catch (e) {
+      throw new Error(e.message);
     }
-
-    const result = await query.getRawMany();
-
-    if (result.length === 0)
-      throw new BadRequestException(`please check start or end type`);
-
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'success',
-      data: result,
-    };
   }
 
   async findByWaringCount(waring: number, field: string) {
-    let query = this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.report', 'report')
-      .select([
-        'user.id',
-        'user.kakaoId',
-        'user.image',
-        'user.nickname',
-        'user.gender',
-        'user.birth',
-        'user.waring',
-        'user.createdAt',
-        'COUNT(report.id) AS reportCount',
-      ])
-      .groupBy('user.id');
+    try {
+      let query = this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.report', 'report')
+        .select([
+          'user.id',
+          'user.kakaoId',
+          'user.image',
+          'user.nickname',
+          'user.gender',
+          'user.birth',
+          'user.waring',
+          'user.createdAt',
+          'COUNT(report.id) AS reportCount',
+        ])
+        .groupBy('user.id');
 
-    if (field === 'LessThanOrEqual') {
-      query = query.where('user.waring <= :waring', { waring });
-    } else if (field === 'MoreThanOrEqual') {
-      query = query.where('user.waring >= :waring', { waring });
-    } else if (field === 'Equal') {
-      query = query.where('user.waring = :waring', { waring });
-    } else {
-      throw new BadRequestException('Invalid field name');
+      if (field === 'LessThanOrEqual') {
+        query = query.where('user.waring <= :waring', { waring });
+      } else if (field === 'MoreThanOrEqual') {
+        query = query.where('user.waring >= :waring', { waring });
+      } else if (field === 'Equal') {
+        query = query.where('user.waring = :waring', { waring });
+      } else {
+        throw new BadRequestException('Invalid field name');
+      }
+
+      const result = await query.getRawMany();
+
+      if (result.length === 0)
+        throw new BadRequestException(`please check field or waring type`);
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'success',
+        data: result,
+      };
+    } catch (e) {
+      throw new Error(e.massage);
     }
+  }
 
-    const result = await query.getRawMany();
+  async addWaringCount(userId: string) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+      if (user === null) throw new BadRequestException('please check userId');
 
-    if (result.length === 0)
-      throw new BadRequestException(`please check field or waring type`);
+      user.waring += 1;
+      await this.userRepository.save(user);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'success',
-      data: result,
-    };
+      return { statusCode: HttpStatus.OK, message: 'success' };
+    } catch (e) {
+      throw new Error(e.massage);
+    }
   }
 }

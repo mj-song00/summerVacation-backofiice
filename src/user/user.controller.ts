@@ -4,6 +4,8 @@ import {
   Param,
   Query,
   BadRequestException,
+  Post,
+  Put,
 } from '@nestjs/common';
 import { ROLE } from 'src/admin/admin.enum';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -49,5 +51,11 @@ export class UserController {
       // 입력된 정보가 없을때
       throw new BadRequestException('infomation is not provided.');
     }
+  }
+
+  //유저 경고 추가
+  @Post('/waring/:userId')
+  addWaringCount(@Param('userId') userId: string) {
+    return this.userService.addWaringCount(userId);
   }
 }
