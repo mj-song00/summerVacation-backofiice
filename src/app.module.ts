@@ -5,6 +5,7 @@ import { Like } from './entity/like.entity';
 import { Emotion } from './entity/emotion.like.entity';
 import { Diary } from 'src/entity/diary.entity';
 import { Admin } from './entity/admin.entity';
+import { Image } from './entity/image.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InjectAccountMiddleware } from './middlewares/injectAccount.middleware';
 import { DatabaseModule } from './../lib/database/database.module';
