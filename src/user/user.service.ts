@@ -158,6 +158,7 @@ export class UserService {
   }
 
   async findByWaringCount(waring: number, field: string) {
+    console.log(waring, field);
     try {
       let query = this.userRepository
         .createQueryBuilder('user')
