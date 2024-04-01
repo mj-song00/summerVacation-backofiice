@@ -22,9 +22,6 @@ export class Report {
   @CreateDateColumn()
   date: Date;
 
-  @Column({ default: false })
-  waring: boolean;
-
   @Column()
   userId: number;
 
