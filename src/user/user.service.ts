@@ -149,7 +149,7 @@ export class UserService {
       const result = await query.getRawMany();
 
       if (result.length === 0)
-        throw new BadRequestException(`please check start or end type`);
+        throw new Error(`please check start or end type`);
 
       return {
         statusCode: HttpStatus.OK,
