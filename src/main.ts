@@ -7,10 +7,10 @@ import * as fs from 'fs';
 const port = process.env.PORT;
 const httpsOptions = {
   key: fs.readFileSync(
-    '/etc/letsencrypt/live/https://summervacation.site//privkey.pem',
+    '/etc/letsencrypt/live/https://summervacation.site/privkey.pem',
   ),
   cert: fs.readFileSync(
-    '/etc/letsencrypt/live/https://summervacation.site//fullchain.pem',
+    '/etc/letsencrypt/live/https://summervacation.site/fullchain.pem',
   ),
   passphrase: process.env.PASS_KEY,
 };
