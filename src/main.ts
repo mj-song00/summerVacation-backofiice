@@ -9,6 +9,6 @@ async function bootstrap() {
     origin: '*',
   });
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen(8000);
+  await app.listen(3000);
 }
 bootstrap();
