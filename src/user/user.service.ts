@@ -158,48 +158,42 @@ export class UserService {
   }
 
   async findByWaringCount(waring: number, field: string) {
-    console.log(waring, field);
-    try {
-      let query = this.userRepository
-        .createQueryBuilder('user')
-        .leftJoinAndSelect('user.report', 'report')
-        .select([
-          'user.id',
-          'user.kakaoId',
-          'user.image',
-          'user.nickname',
-          'user.gender',
-          'user.birth',
-          'user.waring',
-          'user.createdAt',
-          'COUNT(report.id) AS reportCount',
-        ])
-        .groupBy('user.id');
+    let query = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.report', 'report')
+      .select([
+        'user.id',
+        'user.kakaoId',
+        'user.image',
+        'user.nickname',
+        'user.gender',
+        'user.birth',
+        'user.waring',
+        'user.createdAt',
+        'COUNT(report.id) AS reportCount',
+      ])
+      .groupBy('user.id');
 
-      if (field === 'LessThanOrEqual') {
-        query = query.where('user.waring <= :waring', { waring });
-      } else if (field === 'MoreThanOrEqual') {
-        query = query.where('user.waring >= :waring', { waring });
-      } else if (field === 'Equal') {
-        query = query.where('user.waring = :waring', { waring });
-      } else {
-        throw new BadRequestException('Invalid field name');
-      }
-
-      const result = await query.getRawMany();
-
-      console.log(result);
-      if (result.length === 0)
-        throw new BadRequestException(`please check field or waring type`);
-
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'success',
-        data: result,
-      };
-    } catch (e) {
-      throw new Error(e.massage);
+    if (field === 'LessThanOrEqual') {
+      query = query.where('user.waring <= :waring', { waring });
+    } else if (field === 'MoreThanOrEqual') {
+      query = query.where('user.waring >= :waring', { waring });
+    } else if (field === 'Equal') {
+      query = query.where('user.waring = :waring', { waring });
+    } else {
+      throw new BadRequestException('Invalid field name');
     }
+
+    const result = await query.getRawMany();
+
+    if (result.length === 0)
+      throw new BadRequestException(`please check field or waring type`);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'success',
+      data: result,
+    };
   }
 
   async addWaringCount(userId: string) {
