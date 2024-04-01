@@ -188,6 +188,7 @@ export class UserService {
 
       const result = await query.getRawMany();
 
+      console.log(result);
       if (result.length === 0)
         throw new BadRequestException(`please check field or waring type`);
 
