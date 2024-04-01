@@ -29,7 +29,7 @@ export class DiaryService {
 
   async findByContents(contents: string) {
     const diaries = await this.diaryRepository.find({
-      where: { contents: Like(`%${contents}`) },
+      where: { contents: Like(`%${contents}%`) },
     });
     if (diaries.length === 0)
       throw new BadRequestException('please check contents');
