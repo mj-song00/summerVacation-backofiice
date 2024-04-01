@@ -112,53 +112,48 @@ export class UserService {
   }
 
   async findByDate(field: string, start: string, end: string) {
-    try {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
+    const startDate = new Date(start);
+    const endDate = new Date(end);
 
-      let query = this.userRepository
-        .createQueryBuilder('user')
-        .leftJoinAndSelect('user.report', 'report')
-        .select([
-          'user.id',
-          'user.kakaoId',
-          'user.image',
-          'user.nickname',
-          'user.gender',
-          'user.birth',
-          'user.waring',
-          'user.createdAt',
-          'COUNT(report.id) AS reportCount',
-        ])
-        .groupBy('user.id');
+    let query = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.report', 'report')
+      .select([
+        'user.id',
+        'user.kakaoId',
+        'user.image',
+        'user.nickname',
+        'user.gender',
+        'user.birth',
+        'user.waring',
+        'user.createdAt',
+        'COUNT(report.id) AS reportCount',
+      ])
+      .groupBy('user.id');
 
-      if (field === 'createdAt') {
-        query = query.where('user.createdAt BETWEEN :start AND :end', {
-          start: startDate,
-          end: endDate,
-        });
-      } else if (field === 'birth') {
-        query = query.where('user.birth BETWEEN :start AND :end', {
-          start: startDate,
-          end: endDate,
-        });
-      } else {
-        throw new BadRequestException('Invalid field name');
-      }
-
-      const result = await query.getRawMany();
-
-      if (result.length === 0)
-        throw new Error(`please check start or end type`);
-
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'success',
-        data: result,
-      };
-    } catch (e) {
-      throw new Error(e.message);
+    if (field === 'createdAt') {
+      query = query.where('user.createdAt BETWEEN :start AND :end', {
+        start: startDate,
+        end: endDate,
+      });
+    } else if (field === 'birth') {
+      query = query.where('user.birth BETWEEN :start AND :end', {
+        start: startDate,
+        end: endDate,
+      });
+    } else {
+      throw new BadRequestException('Invalid field name');
     }
+
+    const result = await query.getRawMany();
+
+    if (result.length === 0) throw new Error(`please check start or end type`);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'success',
+      data: result,
+    };
   }
 
   async findByWaringCount(waring: number, field: string) {
