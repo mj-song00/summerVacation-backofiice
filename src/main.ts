@@ -2,20 +2,11 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './filters/http-excption.filter';
-import * as fs from 'fs';
 
 const port = process.env.PORT;
-const httpsOptions = {
-  key: fs.readFileSync('/etc/letsencrypt/live/summervacation.site/privkey.pem'),
-  cert: fs.readFileSync(
-    '/etc/letsencrypt/live/summervacation.site/fullchain.pem',
-  ),
-  passphrase: process.env.PASS_KEY,
-};
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    httpsOptions,
-  });
+  const app = await NestFactory.create(AppModule);
   app.enableCors({
     credentials: true,
     origin: '*',
