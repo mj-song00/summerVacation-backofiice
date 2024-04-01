@@ -198,18 +198,14 @@ export class UserService {
   }
 
   async addWaringCount(userId: string) {
-    try {
-      const user = await this.userRepository.findOne({
-        where: { id: userId },
-      });
-      if (user === null) throw new BadRequestException('please check userId');
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (user === null) throw new BadRequestException('please check userId');
 
-      user.waring += 1;
-      await this.userRepository.save(user);
+    user.waring += 1;
+    await this.userRepository.save(user);
 
-      return { statusCode: HttpStatus.OK, message: 'success' };
-    } catch (e) {
-      throw new Error(e.massage);
-    }
+    return { statusCode: HttpStatus.OK, message: 'success' };
   }
 }
