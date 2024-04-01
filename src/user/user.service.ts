@@ -15,6 +15,7 @@ export class UserService {
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
       .select([
+        'user.id',
         'user.kakaoId',
         'user.image',
         'user.nickname',
