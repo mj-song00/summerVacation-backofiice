@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Admin } from 'src/entity/admin.entity';
+import { Category } from 'src/entity/category.enitity';
 import { Diary } from 'src/entity/diary.entity';
 import { Emotion } from 'src/entity/emotion.like.entity';
+import { Faq } from 'src/entity/faq.entity';
 import { Image } from 'src/entity/image.entity';
 import { Like } from 'src/entity/like.entity';
 import { BookMark } from 'src/entity/mark.entity';
@@ -30,6 +32,8 @@ import { UserEntity } from 'src/entity/user.entity';
           BookMark,
           Report,
           UserEntity,
+          Faq,
+          Category,
         ],
         synchronize: true,
       }),
