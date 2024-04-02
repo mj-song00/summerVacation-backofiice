@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { DiaryModule } from './diary/diary.module';
 import { ReportModule } from './report/report.module';
+import { FaqModule } from './faq/faq.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ReportModule } from './report/report.module';
     DiaryModule,
     ReportModule,
     DatabaseModule,
+    FaqModule,
   ],
   controllers: [AppController],
   providers: [AppService],
