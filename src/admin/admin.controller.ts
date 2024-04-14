@@ -23,7 +23,6 @@ export class AdminController {
   }
 
   @Post('/sign-in')
-  @Roles(ROLE.USER)
   login(@Body() loginDto: LoginDto) {
     return this.adminService.signIn(loginDto);
   }
