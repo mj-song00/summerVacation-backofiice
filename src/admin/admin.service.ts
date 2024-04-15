@@ -44,7 +44,7 @@ export class AdminService {
     const admin = await this.adminRepository.findOne({ where: { email } });
     const validatePassword = await bcrypt.compare(password, admin.password);
 
-    if (!email || !validatePassword) {
+    if (!admin || !validatePassword) {
       throw new BadRequestException('please check email or password');
     }
     const accessToken = await this.createAccessToken(admin);
