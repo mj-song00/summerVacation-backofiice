@@ -10,25 +10,23 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async findAll() {
-    const allUser = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.report', 'report')
-      .select([
-        'user.id',
-        'user.kakaoId',
-        'user.image',
-        'user.nickname',
-        'user.gender',
-        'user.birth',
-        'user.waring',
-        'user.createdAt',
-        'COUNT(report.id) AS reportCount',
-      ])
-      .groupBy('user.id')
-      .getRawMany();
+  async findAll(page: number = 1): Promise<any> {
+    const take = 1;
+    const [users, total] = await this.userRepository.findAndCount({
+      take,
+      skip: (page - 1) * take,
+    });
 
-    return { statusCode: HttpStatus.OK, message: 'success', data: allUser };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'success',
+      data: users,
+      meta: {
+        total,
+        page,
+        last_page: Math.ceil(total / take),
+      },
+    };
   }
 
   async findByNickname(nickname: string) {

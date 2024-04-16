@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ROLE } from 'src/admin/admin.enum';
 import { Roles } from 'src/decorators/roles.decorator';
+import { UserEntity } from 'src/entity/user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -16,8 +17,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('/info')
-  @Roles(ROLE.USER)
-  findAll() {
+  //@Roles(ROLE.USER)
+  findAll(@Query('page') page: number = 1): Promise<UserEntity[]> {
     return this.userService.findAll();
   }
 
