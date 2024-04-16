@@ -11,7 +11,7 @@ export class UserService {
   ) {}
 
   async findAll(page: number = 1): Promise<any> {
-    const take = 1;
+    const take = 10;
     const [users, total] = await this.userRepository.findAndCount({
       take,
       skip: (page - 1) * take,
