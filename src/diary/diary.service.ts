@@ -12,13 +12,23 @@ export class DiaryService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
-  async findAllDiaries(userId: number, year: string, month: string) {
+  async findAllDiaries(
+    userId: number,
+    year: string,
+    month: string,
+    page: number,
+    pageSize: number,
+  ) {
+    const skip = (page - 1) * pageSize;
+
     const diaries = await this.diaryRepository
       .createQueryBuilder('diary')
       .where('diary.userId = :userId', { userId })
       .andWhere('YEAR(diary.date) = :year', { year })
       .andWhere('MONTH(diary.date) = :month', { month })
       .orderBy('diary.createdAt', 'DESC')
+      .skip(skip)
+      .take(pageSize)
       .getRawMany();
 
     if (diaries.length === 0)

@@ -13,8 +13,16 @@ export class DiaryController {
     @Param('userId') userId: string,
     @Query('year') year: string,
     @Query('month') month: string,
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
   ) {
-    return this.diaryService.findAllDiaries(+userId, year, month);
+    return this.diaryService.findAllDiaries(
+      +userId,
+      year,
+      month,
+      page,
+      pageSize,
+    );
   }
 
   @Get('')
