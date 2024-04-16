@@ -19,7 +19,7 @@ export class UserController {
   @Get('/info')
   //@Roles(ROLE.USER)
   findAll(@Query('page') page: number = 1): Promise<UserEntity[]> {
-    return this.userService.findAll();
+    return this.userService.findAll(page);
   }
 
   @Get('')
