@@ -208,4 +208,62 @@ export class UserService {
 
     return { statusCode: HttpStatus.OK, message: 'success' };
   }
+
+  async findByQueries(
+    gender: string,
+    field: string,
+    start: string,
+    end: string,
+    waring: number,
+    waringField: string,
+  ) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    let query = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.report', 'report')
+      .where('user.gender = :gender', { gender: `${gender}` })
+      .andWhere(
+        field === 'createdAt'
+          ? 'user.createdAt BETWEEN :start AND :end'
+          : 'user.birth BETWEEN :start AND :end',
+        {
+          start: startDate,
+          end: endDate,
+        },
+      )
+      .andWhere(
+        waringField === 'LessThanOrEqual'
+          ? 'user.waring <= :waring'
+          : waringField === 'MoreThanOrEqual'
+            ? 'user.waring >= :waring'
+            : waringField === 'Equal'
+              ? 'user.waring = :waring'
+              : null,
+        { waring },
+      );
+
+    if (field !== 'createdAt' && field !== 'birth') {
+      throw new BadRequestException('Invalid field name');
+    }
+
+    if (
+      waringField !== 'LessThanOrEqual' &&
+      waringField !== 'MoreThanOrEqual' &&
+      waringField !== 'Equal'
+    ) {
+      throw new BadRequestException('Invalid field name');
+    }
+
+    const result = await query.getMany();
+    if (result.length === 0)
+      throw new BadRequestException('please check queries');
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'success',
+      data: result,
+    };
+  }
 }

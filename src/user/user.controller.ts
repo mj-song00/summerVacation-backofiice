@@ -53,6 +53,26 @@ export class UserController {
     }
   }
 
+  @Get('/findByQueries')
+  @Roles(ROLE.USER)
+  queries(
+    @Query('gender') gender?: string,
+    @Query('field') field?: string,
+    @Query('start') start?: string,
+    @Query('end') end?: string,
+    @Query('waring') waring?: number,
+    @Query('waringField') waringField?: string,
+  ) {
+    return this.userService.findByQueries(
+      gender,
+      field,
+      start,
+      end,
+      +waring,
+      waringField,
+    );
+  }
+
   //유저 경고 추가
   @Post('/waring/:userId')
   @Roles(ROLE.USER)
