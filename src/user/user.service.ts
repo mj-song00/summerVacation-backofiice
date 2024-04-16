@@ -33,7 +33,7 @@ export class UserService {
         },
       };
     } else {
-      throw new NotFoundException('해당 페이지는 존재하지 않습니다');
+      throw new NotFoundException('not exist page');
     }
   }
 
