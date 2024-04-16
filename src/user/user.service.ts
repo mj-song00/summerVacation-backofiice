@@ -1,5 +1,10 @@
 import { UserEntity } from 'src/entity/user.entity';
-import { Injectable, HttpStatus, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  HttpStatus,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -16,17 +21,20 @@ export class UserService {
       take,
       skip: (page - 1) * take,
     });
+    const last_page = Math.ceil(total / take);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'success',
-      data: users,
-      meta: {
-        total,
-        page,
-        last_page: Math.ceil(total / take),
-      },
-    };
+    if (last_page >= page) {
+      return {
+        data: users,
+        meta: {
+          total,
+          page,
+          last_page: last_page,
+        },
+      };
+    } else {
+      throw new NotFoundException('해당 페이지는 존재하지 않습니다');
+    }
   }
 
   async findByNickname(nickname: string) {
