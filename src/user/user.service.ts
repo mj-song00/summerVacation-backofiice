@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
+import { report } from 'process';
 
 @Injectable()
 export class UserService {
@@ -130,11 +131,9 @@ export class UserService {
 
     const take = 10;
     const [users, total] = await this.userRepository.findAndCount({
-      relations: {
-        report: true,
-      },
+      relations: ['report'],
       where: {
-        birth: `${field}`,
+        birth: field,
         likes: Between(startDate, endDate),
       },
       take,
