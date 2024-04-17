@@ -28,7 +28,4 @@ export class ReportService {
 
     return reports;
   }
-
-  //FAQ카테고리 설정
-  async create(createNewCategoryDto: CreateNewCategoryDto) {}
 }
