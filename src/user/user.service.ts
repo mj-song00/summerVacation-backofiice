@@ -173,7 +173,7 @@ export class UserService {
     };
   }
 
-  async findByWaringCount(waring: number, field: string, page) {
+  async findByWaringCount(waring: number, field: string, page: number) {
     const pageSize = 10;
     const skip = (page - 1) * pageSize;
 
