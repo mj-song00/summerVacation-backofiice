@@ -108,9 +108,9 @@ export class UserService {
         'user.createdAt',
         'COUNT(report.id) AS reportCount',
       ])
-      .groupBy('user.id')
       .skip(skip)
       .take(pageSize)
+      .groupBy('user.id')
       .getRawMany();
 
     if (findByGender.length === 0)
