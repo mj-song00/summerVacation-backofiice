@@ -37,7 +37,7 @@ export class UserService {
     }
   }
 
-  async findByNickname(nickname: string) {
+  async findByNickname(nickname: string): Promise<any> {
     const findByNickname = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
@@ -65,7 +65,7 @@ export class UserService {
     };
   }
 
-  async findByKakaoId(kakaoId: string) {
+  async findByKakaoId(kakaoId: string): Promise<any> {
     const info = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
@@ -89,7 +89,11 @@ export class UserService {
     return { statusCode: HttpStatus.OK, message: 'success', data: info };
   }
 
-  async findByGender(gender: string, page: number, pageSize: number) {
+  async findByGender(
+    gender: string,
+    page: number = 1,
+    pageSize: number,
+  ): Promise<any> {
     const skip = (page - 1) * pageSize;
 
     const [users, total] = await this.userRepository
@@ -134,7 +138,7 @@ export class UserService {
     end: string,
     page: number,
     pageSize: number,
-  ) {
+  ): Promise<any> {
     const startDate = new Date(start);
     const endDate = new Date(end);
 
@@ -184,7 +188,11 @@ export class UserService {
     };
   }
 
-  async findByWaringCount(waring: number, field: string, page: number) {
+  async findByWaringCount(
+    waring: number,
+    field: string,
+    page: number,
+  ): Promise<any> {
     const pageSize = 10;
     const skip = (page - 1) * pageSize;
 
