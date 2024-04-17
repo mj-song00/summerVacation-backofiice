@@ -87,5 +87,7 @@ export class AdminService {
 
   async findAll() {
     const admin = await this.adminRepository.find();
+
+    return { statusCode: HttpStatus.OK, message: 'success', data: admin };
   }
 }
