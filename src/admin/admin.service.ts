@@ -84,4 +84,8 @@ export class AdminService {
 
     return refreshToken;
   }
+
+  async findAll() {
+    const admin = await this.adminRepository.find();
+  }
 }

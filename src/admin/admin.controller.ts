@@ -26,4 +26,10 @@ export class AdminController {
   login(@Body() loginDto: LoginDto) {
     return this.adminService.signIn(loginDto);
   }
+
+  @Get('')
+  //@Roles(ROLE.USER)
+  getAdmin() {
+    return this.adminService.findAll();
+  }
 }

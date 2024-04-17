@@ -28,4 +28,8 @@ export class CreateAdminDto {
     return trimmedValue;
   })
   password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  owner: string;
 }
