@@ -173,8 +173,12 @@ export class UserService {
     };
   }
 
-  async findByWaringCount(waring: number, field: string, page: number) {
-    const pageSize = 10;
+  async findByWaringCount(
+    waring: number,
+    field: string,
+    page: number,
+    pageSize: number = 10,
+  ) {
     const skip = (page - 1) * pageSize;
 
     let query = this.userRepository
