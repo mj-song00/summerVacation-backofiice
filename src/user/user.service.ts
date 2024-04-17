@@ -89,13 +89,9 @@ export class UserService {
     return { statusCode: HttpStatus.OK, message: 'success', data: info };
   }
 
-  async findByGender(
-    gender: string,
-    page: number = 1,
-    pageSize: number,
-  ): Promise<any> {
-    const skip = (page - 1) * pageSize;
-
+  async findByGender(gender: string, page: number = 1): Promise<any> {
+    const take = 10;
+    const skip = (page - 1) * take;
     const [users, total] = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
@@ -112,11 +108,11 @@ export class UserService {
         'COUNT(report.id) AS reportCount',
       ])
       .skip(skip)
-      .take(pageSize)
+      .take(take)
       .groupBy('user.id')
       .getRawMany();
 
-    const last_page = Math.ceil(total / pageSize);
+    const last_page = Math.ceil(total / take);
 
     if (last_page >= page) {
       return {
