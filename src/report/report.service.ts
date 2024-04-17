@@ -1,3 +1,4 @@
+import { CreateNewCategoryDto } from './../faq/dto/faq.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Report } from 'src/entity/report.entity';
@@ -9,11 +10,17 @@ export class ReportService {
     @InjectRepository(Report)
     private readonly reportRepository: Repository<Report>,
   ) {}
-  async getReports() {
+  async getReports(page: number) {
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
+
     const reports = await this.reportRepository.find({
       relations: {
         user: true,
+        faq: true,
       },
+      skip: skip,
+      take: pageSize,
     });
 
     if (reports.length === 0)
@@ -21,4 +28,7 @@ export class ReportService {
 
     return reports;
   }
+
+  //FAQ카테고리 설정
+  async create(createNewCategoryDto: CreateNewCategoryDto) {}
 }
