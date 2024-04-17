@@ -122,10 +122,16 @@ export class UserService {
     };
   }
 
-  async findByDate(field: string, start: string, end: string, page: number) {
+  async findByDate(
+    field: string,
+    start: string,
+    end: string,
+    page: number,
+    pageSize: number,
+  ) {
     const startDate = new Date(start);
     const endDate = new Date(end);
-    const pageSize = 10;
+
     const skip = (page - 1) * pageSize;
 
     let query = this.userRepository
