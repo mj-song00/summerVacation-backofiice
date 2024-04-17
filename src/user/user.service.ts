@@ -89,8 +89,7 @@ export class UserService {
     return { statusCode: HttpStatus.OK, message: 'success', data: info };
   }
 
-  async findByGender(gender: string, page: number) {
-    const pageSize = 10;
+  async findByGender(gender: string, page: number, pageSize: number) {
     const skip = (page - 1) * pageSize;
 
     const findByGender = await this.userRepository

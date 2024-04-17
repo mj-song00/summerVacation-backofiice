@@ -43,7 +43,7 @@ export class UserController {
       return this.userService.findByKakaoId(kakaoId);
     } else if (gender) {
       //성별
-      return this.userService.findByGender(gender, page);
+      return this.userService.findByGender(gender, page, pageSize);
       //가입일 or 출생년도
     } else if (start && end) {
       return this.userService.findByDate(field, start, end, page);
