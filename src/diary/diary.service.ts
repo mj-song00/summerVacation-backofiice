@@ -37,16 +37,21 @@ export class DiaryService {
     return { statusCode: HttpStatus.OK, message: 'success', data: diaries };
   }
 
-  async findByContents(contents: string) {
+  async findByContents(contents: string, page: number) {
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
+
     const diaries = await this.diaryRepository.find({
       where: { contents: Like(`%${contents}%`) },
+      skip: skip,
+      take: pageSize,
     });
     if (diaries.length === 0)
       throw new BadRequestException('please check contents');
     return { statusCode: HttpStatus.OK, message: 'success', data: diaries };
   }
 
-  async findByWaringCount(waringCount: number, field: string) {
+  async findByWaringCount(waringCount: number, field: string, page: number) {
     let query = this.diaryRepository.createQueryBuilder('diary');
 
     if (field === 'LessThanOrEqual') {
@@ -62,8 +67,9 @@ export class DiaryService {
     } else {
       throw new BadRequestException('Invalid field name');
     }
-
-    const result = await query.getRawMany();
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
+    const result = await query.skip(skip).take(pageSize).getRawMany();
 
     if (result.length === 0)
       throw new BadRequestException(`please check field or waring type`);
