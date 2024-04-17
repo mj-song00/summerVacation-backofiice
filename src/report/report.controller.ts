@@ -1,4 +1,3 @@
-import { CreateNewCategoryDto } from './../faq/dto/faq.dto';
 import { Controller, Param, Get, Post, Query } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { Roles } from 'src/decorators/roles.decorator';

@@ -1,4 +1,3 @@
-import { CreateNewCategoryDto } from './../faq/dto/faq.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Report } from 'src/entity/report.entity';
