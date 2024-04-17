@@ -120,7 +120,7 @@ export class UserService {
     }
   }
 
-  async findByBirth(
+  async findByDate(
     field: string,
     start: string,
     end: string,
@@ -133,10 +133,10 @@ export class UserService {
     const [users, total] = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
-      .where('user.birth >= :start', {
+      .where(`user.${field} >= :start`, {
         start: startDate,
       })
-      .andWhere('user.birth <= :end', {
+      .andWhere(`user.${field} <= :end`, {
         end: endDate,
       })
       .skip((page - 1) * take)
@@ -159,44 +159,44 @@ export class UserService {
     }
   }
 
-  async findByCreatedAt(
-    field: string,
-    start: string,
-    end: string,
-    page: number = 1,
-  ): Promise<any> {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
+  // async findByCreatedAt(
+  //   field: string,
+  //   start: string,
+  //   end: string,
+  //   page: number = 1,
+  // ): Promise<any> {
+  //   const startDate = new Date(start);
+  //   const endDate = new Date(end);
 
-    const take = 10;
-    const [users, total] = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.report', 'report')
-      .where('user.createdAt >= :start', {
-        start: startDate,
-      })
-      .andWhere('user.createdAt <= :end', {
-        end: endDate,
-      })
-      .skip((page - 1) * take)
-      .take(take)
-      .getManyAndCount();
+  //   const take = 10;
+  //   const [users, total] = await this.userRepository
+  //     .createQueryBuilder('user')
+  //     .leftJoinAndSelect('user.report', 'report')
+  //     // .where('user.createdAt >= :start', {
+  //     //   start: startDate,
+  //     // })
+  //     // .andWhere('user.createdAt <= :end', {
+  //     //   end: endDate,
+  //     // })
+  //     .skip((page - 1) * take)
+  //     .take(take)
+  //     .getManyAndCount();
 
-    const last_page = Math.ceil(total / take);
+  //   const last_page = Math.ceil(total / take);
 
-    if (last_page >= page) {
-      return {
-        data: users,
-        meta: {
-          total,
-          current_page: page,
-          last_page,
-        },
-      };
-    } else {
-      throw new BadRequestException(`${field} is not exist`);
-    }
-  }
+  //   if (last_page >= page) {
+  //     return {
+  //       data: users,
+  //       meta: {
+  //         total,
+  //         current_page: page,
+  //         last_page,
+  //       },
+  //     };
+  //   } else {
+  //     throw new BadRequestException(`${field} is not exist`);
+  //   }
+  // }
 
   async findByWaringCount(
     waring: number,
