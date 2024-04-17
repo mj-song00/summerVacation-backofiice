@@ -66,6 +66,7 @@ export class UserController {
     @Query('waring') waring?: number,
     @Query('waringField') waringField?: string,
     @Query('page') page: number = 1,
+    @Query('birthFiled') birthFiled?: string,
   ) {
     return this.userService.findByQueries(
       gender,
