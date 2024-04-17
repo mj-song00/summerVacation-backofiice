@@ -174,7 +174,7 @@ export class UserService {
   }
 
   async findByWaringCount(waring: number, field: string, page: number) {
-    const pageSize = 5;
+    const pageSize = 10;
     const skip = (page - 1) * pageSize;
 
     let query = this.userRepository
@@ -191,9 +191,9 @@ export class UserService {
         'user.createdAt',
         'COUNT(report.id) AS reportCount',
       ])
-      .groupBy('user.id')
       .skip(skip)
-      .take(pageSize);
+      .take(pageSize)
+      .groupBy('user.id');
 
     if (field === 'LessThanOrEqual') {
       query = query.where('user.waring <= :waring', { waring });
