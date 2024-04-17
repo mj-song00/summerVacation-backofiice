@@ -46,7 +46,7 @@ export class UserController {
       return this.userService.findByGender(gender, page);
       //가입일 or 출생년도
     } else if (start && end) {
-      return this.userService.findByDate(field, start, end, page);
+      return this.userService.findByBirth(field, start, end, page);
     } else if (waring) {
       //경고 횟수
       return this.userService.findByWaringCount(+waring, field, page);

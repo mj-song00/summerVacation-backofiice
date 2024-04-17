@@ -120,7 +120,7 @@ export class UserService {
     }
   }
 
-  async findByDate(
+  async findByBirth(
     field: string,
     start: string,
     end: string,
@@ -130,12 +130,18 @@ export class UserService {
     const endDate = new Date(end);
 
     const take = 10;
-    const [users, total] = await this.userRepository.findAndCount({
-      relations: ['report'],
-      where: [{ birth: field }, { likes: Between(startDate, endDate) }],
-      take,
-      skip: (page - 1) * take,
-    });
+    const [users, total] = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.report', 'report')
+      .where('user.birth = :field', { field })
+      .andWhere('report.likes BETWEEN :start AND :end', {
+        start: startDate,
+        end: endDate,
+      })
+      .skip((page - 1) * take)
+      .take(take)
+      .getManyAndCount();
+
     const last_page = Math.ceil(total / take);
 
     if (last_page >= page) {
