@@ -132,10 +132,7 @@ export class UserService {
     const take = 10;
     const [users, total] = await this.userRepository.findAndCount({
       relations: ['report'],
-      where: {
-        birth: field,
-        likes: Between(startDate, endDate),
-      },
+      where: [{ birth: field }, { likes: Between(startDate, endDate) }],
       take,
       skip: (page - 1) * take,
     });
