@@ -92,7 +92,7 @@ export class UserService {
   async findByGender(gender: string, page: number, pageSize: number) {
     const skip = (page - 1) * pageSize;
 
-    const findByGender = await this.userRepository
+    const [users, total] = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
       .where('user.gender =:gender', { gender: `${gender}` })
@@ -112,26 +112,26 @@ export class UserService {
       .groupBy('user.id')
       .getRawMany();
 
-    if (findByGender.length === 0)
-      throw new BadRequestException(`${gender} is not exist`);
+    const last_page = Math.ceil(total / pageSize);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'success',
-      data: findByGender,
-    };
+    if (last_page >= page) {
+      return {
+        data: users,
+        meta: {
+          total,
+          current_page: page,
+          last_page,
+        },
+      };
+    } else {
+      throw new BadRequestException(`${gender} is not exist`);
+    }
   }
 
-  async findByDate(
-    field: string,
-    start: string,
-    end: string,
-    page: number,
-    pageSize: number,
-  ) {
+  async findByDate(field: string, start: string, end: string, page: number) {
     const startDate = new Date(start);
     const endDate = new Date(end);
-
+    const pageSize = 10;
     const skip = (page - 1) * pageSize;
 
     let query = this.userRepository
