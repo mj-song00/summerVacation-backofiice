@@ -133,7 +133,7 @@ export class UserService {
     const [users, total] = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
-      .where('user.birth = :birth', { birth: `${field}` })
+      .where('user.birth = :field', { field: `${field}` })
       .andWhere('user.birth BETWEEN :start AND :end', {
         start: startDate,
         end: endDate,
