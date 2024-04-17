@@ -133,9 +133,10 @@ export class UserService {
     const [users, total] = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
-      .where('user.birth = :field', { field: `${field}` })
-      .andWhere('user.birth BETWEEN :start AND :end', {
+      .where('user.birth >= :start', {
         start: startDate,
+      })
+      .andWhere('user.birth <= :end', {
         end: endDate,
       })
       .skip((page - 1) * take)
