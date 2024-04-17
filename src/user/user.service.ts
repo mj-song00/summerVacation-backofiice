@@ -89,7 +89,10 @@ export class UserService {
     return { statusCode: HttpStatus.OK, message: 'success', data: info };
   }
 
-  async findByGender(gender: string) {
+  async findByGender(gender: string, page: number) {
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
+
     const findByGender = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
@@ -106,6 +109,8 @@ export class UserService {
         'COUNT(report.id) AS reportCount',
       ])
       .groupBy('user.id')
+      .skip(skip)
+      .take(pageSize)
       .getRawMany();
 
     if (findByGender.length === 0)
@@ -118,9 +123,11 @@ export class UserService {
     };
   }
 
-  async findByDate(field: string, start: string, end: string) {
+  async findByDate(field: string, start: string, end: string, page) {
     const startDate = new Date(start);
     const endDate = new Date(end);
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
 
     let query = this.userRepository
       .createQueryBuilder('user')
@@ -136,7 +143,9 @@ export class UserService {
         'user.createdAt',
         'COUNT(report.id) AS reportCount',
       ])
-      .groupBy('user.id');
+      .groupBy('user.id')
+      .skip(skip)
+      .take(pageSize);
 
     if (field === 'createdAt') {
       query = query.where('user.createdAt BETWEEN :start AND :end', {
@@ -164,7 +173,10 @@ export class UserService {
     };
   }
 
-  async findByWaringCount(waring: number, field: string) {
+  async findByWaringCount(waring: number, field: string, page) {
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
+
     let query = this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
@@ -179,7 +191,9 @@ export class UserService {
         'user.createdAt',
         'COUNT(report.id) AS reportCount',
       ])
-      .groupBy('user.id');
+      .groupBy('user.id')
+      .skip(skip)
+      .take(pageSize);
 
     if (field === 'LessThanOrEqual') {
       query = query.where('user.waring <= :waring', { waring });
@@ -222,9 +236,12 @@ export class UserService {
     end: string,
     waring: number,
     waringField: string,
+    page: number,
   ) {
     const startDate = new Date(start);
     const endDate = new Date(end);
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
 
     let query = this.userRepository
       .createQueryBuilder('user')
@@ -248,7 +265,9 @@ export class UserService {
               ? 'user.waring = :waring'
               : null,
         { waring },
-      );
+      )
+      .skip(skip)
+      .take(pageSize);
 
     if (field !== 'createdAt' && field !== 'birth') {
       throw new BadRequestException('Invalid field name');
