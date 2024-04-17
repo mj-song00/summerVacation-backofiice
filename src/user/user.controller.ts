@@ -33,6 +33,7 @@ export class UserController {
     @Query('end') end?: string,
     @Query('waring') waring?: string,
     @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
   ) {
     if (nickname) {
       // 닉네임만 제공되었을 때
