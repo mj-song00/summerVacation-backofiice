@@ -123,7 +123,7 @@ export class UserService {
     };
   }
 
-  async findByDate(field: string, start: string, end: string, page) {
+  async findByDate(field: string, start: string, end: string, page: number) {
     const startDate = new Date(start);
     const endDate = new Date(end);
     const pageSize = 10;
