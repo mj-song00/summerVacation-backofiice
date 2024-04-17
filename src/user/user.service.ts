@@ -134,7 +134,7 @@ export class UserService {
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
       .where('user.birth = :field', { field })
-      .andWhere('report.likes BETWEEN :start AND :end', {
+      .andWhere('user.birth BETWEEN :start AND :end', {
         start: startDate,
         end: endDate,
       })
