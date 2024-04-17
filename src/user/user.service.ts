@@ -92,25 +92,16 @@ export class UserService {
   async findByGender(gender: string, page: number = 1): Promise<any> {
     const take = 10;
     const skip = (page - 1) * take;
-    const [users, total] = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.report', 'report')
-      .where('user.gender =:gender', { gender: `${gender}` })
-      .select([
-        'user.id',
-        'user.kakaoId',
-        'user.image',
-        'user.nickname',
-        'user.gender',
-        'user.birth',
-        'user.waring',
-        'user.createdAt',
-        'COUNT(report.id) AS reportCount',
-      ])
-      .skip(skip)
-      .take(take)
-      .groupBy('user.id')
-      .getRawMany();
+    const [users, total] = await this.userRepository.findAndCount({
+      relations: {
+        report: true,
+      },
+      where: {
+        gender: `${gender}`,
+      },
+      take,
+      skip: (page - 1) * take,
+    });
 
     const last_page = Math.ceil(total / take);
 
