@@ -133,7 +133,7 @@ export class UserService {
     const [users, total] = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
-      .where('user.birth = :field', { field })
+      .where('user.birth = :birth', { birth: field })
       .andWhere('user.birth BETWEEN :start AND :end', {
         start: startDate,
         end: endDate,
@@ -156,51 +156,6 @@ export class UserService {
     } else {
       throw new BadRequestException(`${field} is not exist`);
     }
-
-    // const skip = (page - 1) * pageSize;
-
-    // let query = this.userRepository
-    //   .createQueryBuilder('user')
-    //   .leftJoinAndSelect('user.report', 'report')
-    //   .select([
-    //     'user.id',
-    //     'user.kakaoId',
-    //     'user.image',
-    //     'user.nickname',
-    //     'user.gender',
-    //     'user.birth',
-    //     'user.waring',
-    //     'user.createdAt',
-    //     'COUNT(report.id) AS reportCount',
-    //   ])
-    //   .skip(skip)
-    //   .take(pageSize)
-    //   .groupBy('user.id');
-
-    // if (field === 'createdAt') {
-    //   query = query.where('user.createdAt BETWEEN :start AND :end', {
-    //     start: startDate,
-    //     end: endDate,
-    //   });
-    // } else if (field === 'birth') {
-    //   query = query.where('user.birth BETWEEN :start AND :end', {
-    //     start: startDate,
-    //     end: endDate,
-    //   });
-    // } else {
-    //   throw new BadRequestException('Invalid field name');
-    // }
-
-    // const result = await query.getRawMany();
-
-    // if (result.length === 0)
-    //   throw new BadRequestException(`please check start or end type`);
-
-    // return {
-    //   statusCode: HttpStatus.OK,
-    //   message: 'success',
-    //   data: result,
-    // };
   }
 
   async findByWaringCount(
