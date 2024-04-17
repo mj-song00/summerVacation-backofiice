@@ -33,7 +33,6 @@ export class UserController {
     @Query('end') end?: string,
     @Query('waring') waring?: string,
     @Query('page') page: number = 1,
-    @Query('pageSize') pageSize: number = 10,
   ): Promise<UserEntity[]> {
     if (nickname) {
       // 닉네임만 제공되었을 때
@@ -46,9 +45,7 @@ export class UserController {
       return this.userService.findByGender(gender, page);
       //가입일 or 출생년도
     } else if (start && end) {
-      return this.userService.findByBirth(field, start, end, page);
-    } else if (start && end) {
-      return this.userService.findByCreatedAt(field, start, end, page);
+      return this.userService.findByDate(field, start, end, page);
     } else if (waring) {
       //경고 횟수
       return this.userService.findByWaringCount(+waring, field, page);
