@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -91,7 +91,7 @@ export class UserService {
 
   async findByGender(gender: string, page: number = 1): Promise<any> {
     const take = 10;
-    const skip = (page - 1) * take;
+
     const [users, total] = await this.userRepository.findAndCount({
       relations: {
         report: true,
@@ -123,56 +123,82 @@ export class UserService {
     field: string,
     start: string,
     end: string,
-    page: number,
-    pageSize: number,
+    page: number = 1,
   ): Promise<any> {
     const startDate = new Date(start);
     const endDate = new Date(end);
 
-    const skip = (page - 1) * pageSize;
+    const take = 10;
+    const [users, total] = await this.userRepository.findAndCount({
+      relations: {
+        report: true,
+      },
+      where: {
+        birth: `${field}`,
+        likes: Between(startDate, endDate),
+      },
+      take,
+      skip: (page - 1) * take,
+    });
+    const last_page = Math.ceil(total / take);
 
-    let query = this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.report', 'report')
-      .select([
-        'user.id',
-        'user.kakaoId',
-        'user.image',
-        'user.nickname',
-        'user.gender',
-        'user.birth',
-        'user.waring',
-        'user.createdAt',
-        'COUNT(report.id) AS reportCount',
-      ])
-      .skip(skip)
-      .take(pageSize)
-      .groupBy('user.id');
-
-    if (field === 'createdAt') {
-      query = query.where('user.createdAt BETWEEN :start AND :end', {
-        start: startDate,
-        end: endDate,
-      });
-    } else if (field === 'birth') {
-      query = query.where('user.birth BETWEEN :start AND :end', {
-        start: startDate,
-        end: endDate,
-      });
+    if (last_page >= page) {
+      return {
+        data: users,
+        meta: {
+          total,
+          current_page: page,
+          last_page,
+        },
+      };
     } else {
-      throw new BadRequestException('Invalid field name');
+      throw new BadRequestException(`${field} is not exist`);
     }
 
-    const result = await query.getRawMany();
+    // const skip = (page - 1) * pageSize;
 
-    if (result.length === 0)
-      throw new BadRequestException(`please check start or end type`);
+    // let query = this.userRepository
+    //   .createQueryBuilder('user')
+    //   .leftJoinAndSelect('user.report', 'report')
+    //   .select([
+    //     'user.id',
+    //     'user.kakaoId',
+    //     'user.image',
+    //     'user.nickname',
+    //     'user.gender',
+    //     'user.birth',
+    //     'user.waring',
+    //     'user.createdAt',
+    //     'COUNT(report.id) AS reportCount',
+    //   ])
+    //   .skip(skip)
+    //   .take(pageSize)
+    //   .groupBy('user.id');
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'success',
-      data: result,
-    };
+    // if (field === 'createdAt') {
+    //   query = query.where('user.createdAt BETWEEN :start AND :end', {
+    //     start: startDate,
+    //     end: endDate,
+    //   });
+    // } else if (field === 'birth') {
+    //   query = query.where('user.birth BETWEEN :start AND :end', {
+    //     start: startDate,
+    //     end: endDate,
+    //   });
+    // } else {
+    //   throw new BadRequestException('Invalid field name');
+    // }
+
+    // const result = await query.getRawMany();
+
+    // if (result.length === 0)
+    //   throw new BadRequestException(`please check start or end type`);
+
+    // return {
+    //   statusCode: HttpStatus.OK,
+    //   message: 'success',
+    //   data: result,
+    // };
   }
 
   async findByWaringCount(
