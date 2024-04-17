@@ -143,9 +143,9 @@ export class UserService {
         'user.createdAt',
         'COUNT(report.id) AS reportCount',
       ])
-      .groupBy('user.id')
       .skip(skip)
-      .take(pageSize);
+      .take(pageSize)
+      .groupBy('user.id');
 
     if (field === 'createdAt') {
       query = query.where('user.createdAt BETWEEN :start AND :end', {
