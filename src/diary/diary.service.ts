@@ -110,7 +110,9 @@ export class DiaryService {
       .getManyAndCount();
 
     if (diaries.length === 0)
-      throw new BadRequestException(`please check field or waring type`);
+      throw new BadRequestException(
+        `please check field or waring type or waringCount`,
+      );
 
     const lastPage = Math.ceil(total / take);
 
