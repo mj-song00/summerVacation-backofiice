@@ -35,6 +35,8 @@ export class DiaryService {
       .skip(skip)
       .take(take)
       .getManyAndCount();
+    if (diaries.length === 0)
+      throw new BadRequestException('please check year or month or userId');
 
     const lastPage = Math.ceil(total / take);
 
