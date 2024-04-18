@@ -10,13 +10,13 @@ export class DiaryController {
 
   @Get('/:userId')
   @Roles(ROLE.USER)
-  findAll(
+  findMonth(
     @Param('userId') userId: string,
     @Query('year') year: string,
     @Query('month') month: string,
     @Query('page') page: number = 1,
   ): Promise<Diary[]> {
-    return this.diaryService.findAllDiaries(+userId, year, month, page);
+    return this.diaryService.findAllDiariesByMonth(+userId, year, month, page);
   }
 
   @Get('')
@@ -34,5 +34,11 @@ export class DiaryController {
       // 신고 횟수 검색
       return this.diaryService.findByWaringCount(+waringCount, field, page);
     }
+  }
+
+  @Get('')
+  @Roles(ROLE.USER)
+  findAll(): Promise<Diary[]> {
+    return this.diaryService.findAllDiaries();
   }
 }

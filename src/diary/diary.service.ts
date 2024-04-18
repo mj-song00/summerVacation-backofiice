@@ -17,7 +17,7 @@ export class DiaryService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
-  async findAllDiaries(
+  async findAllDiariesByMonth(
     userId: number,
     year: string,
     month: string,
@@ -129,4 +129,6 @@ export class DiaryService {
       throw new NotFoundException('not exist page');
     }
   }
+
+  async findAllDiaries(): Promise<any> {}
 }
