@@ -135,6 +135,9 @@ export class DiaryService {
     const [diaries, total] = await this.diaryRepository.findAndCount({
       take,
       skip: (page - 1) * take,
+      relations: {
+        user: true,
+      },
     });
     if (diaries.length === 0) throw new BadRequestException('diary not exist');
     const lastPage = Math.ceil(total / take);
