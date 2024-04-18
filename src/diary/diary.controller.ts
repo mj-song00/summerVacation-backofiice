@@ -8,6 +8,13 @@ import { DiaryService } from './diary.service';
 export class DiaryController {
   constructor(private readonly diaryService: DiaryService) {}
 
+  @Get('/info')
+  @Roles(ROLE.USER)
+  findAll(@Query('page') page: number = 1): Promise<Diary[]> {
+    console.log(page);
+    return this.diaryService.findAllDiaries(page);
+  }
+
   @Get('/:userId')
   @Roles(ROLE.USER)
   findMonth(
@@ -21,7 +28,7 @@ export class DiaryController {
 
   @Get('')
   @Roles(ROLE.USER)
-  findOne(
+  findByQueries(
     @Query('contents') contents?: string,
     @Query('waringCount') waringCount?: string,
     @Query('field') field?: string,
@@ -34,11 +41,5 @@ export class DiaryController {
       // 신고 횟수 검색
       return this.diaryService.findByWaringCount(+waringCount, field, page);
     }
-  }
-
-  @Get('')
-  @Roles(ROLE.USER)
-  findAll(): Promise<Diary[]> {
-    return this.diaryService.findAllDiaries();
   }
 }

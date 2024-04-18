@@ -130,5 +130,26 @@ export class DiaryService {
     }
   }
 
-  async findAllDiaries(): Promise<any> {}
+  async findAllDiaries(page: number): Promise<any> {
+    const take = 10;
+    const [diaries, total] = await this.diaryRepository.findAndCount({
+      take,
+      skip: (page - 1) * take,
+    });
+    if (diaries.length === 0) throw new BadRequestException('diary not exist');
+    const lastPage = Math.ceil(total / take);
+
+    if (lastPage >= page) {
+      return {
+        data: diaries,
+        meta: {
+          total,
+          page,
+          last_page: lastPage,
+        },
+      };
+    } else {
+      throw new NotFoundException('not exist page');
+    }
+  }
 }
