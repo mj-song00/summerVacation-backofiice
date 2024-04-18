@@ -164,8 +164,8 @@ export class UserService {
     field: string,
     page: number,
   ): Promise<any> {
-    const pageSize = 10;
-    const skip = (page - 1) * pageSize;
+    const take = 10; // 페이지당 항목 수
+    const skip = (page - 1) * take; // 건너뛸 항목 수
 
     let query = this.userRepository
       .createQueryBuilder('user')
@@ -182,7 +182,7 @@ export class UserService {
         'COUNT(report.id) AS reportCount',
       ])
       .skip(skip)
-      .take(pageSize)
+      .take(take)
       .groupBy('user.id');
 
     if (field === 'LessThanOrEqual') {
@@ -195,16 +195,22 @@ export class UserService {
       throw new BadRequestException('Invalid field name');
     }
 
-    const result = await query.getRawMany();
+    const [users, total] = await query.getManyAndCount(); // 결과와 총 항목 수를 가져옴
 
-    if (result.length === 0)
-      throw new BadRequestException(`please check field or waring type`);
+    const last_page = Math.ceil(total / take); // 마지막 페이지 계산
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'success',
-      data: result,
-    };
+    if (last_page >= page) {
+      return {
+        data: users,
+        meta: {
+          total,
+          current_page: page,
+          last_page,
+        },
+      };
+    } else {
+      throw new BadRequestException(`${field} is not exist`);
+    }
   }
 
   async addWaringCount(userId: string) {
