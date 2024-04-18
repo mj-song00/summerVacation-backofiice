@@ -102,17 +102,29 @@ export class DiaryService {
     } else {
       throw new BadRequestException('Invalid field name');
     }
-    const pageSize = 10;
-    const skip = (page - 1) * pageSize;
-    const result = await query.skip(skip).take(pageSize).getRawMany();
+    const take = 10;
+    const skip = (page - 1) * take;
+    const [diaries, total] = await query
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
 
-    if (result.length === 0)
+    if (diaries.length === 0)
       throw new BadRequestException(`please check field or waring type`);
 
-    // return {
-    //   statusCode: HttpStatus.OK,
-    //   message: 'success',
-    //   data: result,
-    // };
+    const lastPage = Math.ceil(total / take);
+
+    if (lastPage >= page) {
+      return {
+        data: diaries,
+        meta: {
+          total,
+          page,
+          last_page: lastPage,
+        },
+      };
+    } else {
+      throw new NotFoundException('not exist page');
+    }
   }
 }
