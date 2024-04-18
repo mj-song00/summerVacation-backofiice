@@ -52,21 +52,37 @@ export class DiaryService {
     }
   }
 
-  async findByContents(contents: string, page: number) {
-    const pageSize = 10;
-    const skip = (page - 1) * pageSize;
+  async findByContents(contents: string, page: number): Promise<any> {
+    const take = 10;
+    const skip = (page - 1) * take;
 
-    const diaries = await this.diaryRepository.find({
+    const [diaries, total] = await this.diaryRepository.findAndCount({
       where: { contents: Like(`%${contents}%`) },
-      skip: skip,
-      take: pageSize,
+      skip,
+      take,
     });
-    if (diaries.length === 0)
-      throw new BadRequestException('please check contents');
-    return { statusCode: HttpStatus.OK, message: 'success', data: diaries };
+
+    const lastPage = Math.ceil(total / take);
+
+    if (lastPage >= page) {
+      return {
+        data: diaries,
+        meta: {
+          total,
+          page,
+          last_page: lastPage,
+        },
+      };
+    } else {
+      throw new NotFoundException('not exist page');
+    }
   }
 
-  async findByWaringCount(waringCount: number, field: string, page: number) {
+  async findByWaringCount(
+    waringCount: number,
+    field: string,
+    page: number,
+  ): Promise<any> {
     let query = this.diaryRepository.createQueryBuilder('diary');
 
     if (field === 'LessThanOrEqual') {
@@ -89,10 +105,10 @@ export class DiaryService {
     if (result.length === 0)
       throw new BadRequestException(`please check field or waring type`);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'success',
-      data: result,
-    };
+    // return {
+    //   statusCode: HttpStatus.OK,
+    //   message: 'success',
+    //   data: result,
+    // };
   }
 }

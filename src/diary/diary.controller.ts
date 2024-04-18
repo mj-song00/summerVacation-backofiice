@@ -26,7 +26,7 @@ export class DiaryController {
     @Query('waringCount') waringCount?: string,
     @Query('field') field?: string,
     @Query('page') page: number = 1,
-  ) {
+  ): Promise<Diary[]> {
     if (contents) {
       //내용검색
       return this.diaryService.findByContents(contents, page);
