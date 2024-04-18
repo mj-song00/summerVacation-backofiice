@@ -61,6 +61,8 @@ export class DiaryService {
       skip,
       take,
     });
+    if (diaries.length === 0)
+      throw new BadRequestException('please check contents or userId');
 
     const lastPage = Math.ceil(total / take);
 
