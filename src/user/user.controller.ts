@@ -59,22 +59,27 @@ export class UserController {
   @Roles(ROLE.USER)
   queries(
     @Query('gender') gender?: string,
-    @Query('field') field?: string,
-    @Query('start') start?: string,
-    @Query('end') end?: string,
-    @Query('waring') waring?: number,
-    @Query('waringField') waringField?: string,
+    @Query('createdAtField') createdAtField?: string,
+    @Query('createdStart') createdStart?: string,
+    @Query('createdEnd') createdEnd?: string,
+    @Query('warning') waring?: number,
+    @Query('warningField') warningField?: string,
     @Query('page') page: number = 1,
-    @Query('birthFiled') birthFiled?: string,
-  ) {
+    @Query('birthField') birthField?: string,
+    @Query('birthStart') birthStart?: string,
+    @Query('birthEnd') birthEnd?: string,
+  ): Promise<UserEntity[]> {
     return this.userService.findByQueries(
       gender,
-      field,
-      start,
-      end,
+      createdAtField,
+      createdStart,
+      createdEnd,
       +waring,
-      waringField,
+      warningField,
       page,
+      birthField,
+      birthStart,
+      birthEnd,
     );
   }
 

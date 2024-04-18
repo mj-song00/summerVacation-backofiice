@@ -6,8 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
-import { report } from 'process';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -22,6 +21,7 @@ export class UserService {
       take,
       skip: (page - 1) * take,
     });
+    if (users.length === 0) throw new BadRequestException('bad request');
     const last_page = Math.ceil(total / take);
 
     if (last_page >= page) {
@@ -104,6 +104,9 @@ export class UserService {
       skip: (page - 1) * take,
     });
 
+    if (users.length === 0)
+      throw new BadRequestException(`please check ${gender}`);
+
     const last_page = Math.ceil(total / take);
 
     if (last_page >= page) {
@@ -116,7 +119,7 @@ export class UserService {
         },
       };
     } else {
-      throw new BadRequestException(`${gender} is not exist`);
+      throw new NotFoundException('not exist page');
     }
   }
 
@@ -143,19 +146,22 @@ export class UserService {
       .take(take)
       .getManyAndCount();
 
-    const last_page = Math.ceil(total / take);
+    if (users.length === 0)
+      throw new BadRequestException(`please check field or start or end`);
 
-    if (last_page >= page) {
+    const lastPage = Math.ceil(total / take);
+
+    if (lastPage >= page) {
       return {
         data: users,
         meta: {
           total,
           current_page: page,
-          last_page,
+          lastPage,
         },
       };
     } else {
-      throw new BadRequestException(`${field} is not exist`);
+      throw new NotFoundException('not exist page');
     }
   }
 
@@ -197,19 +203,21 @@ export class UserService {
 
     const [users, total] = await query.getManyAndCount(); // 결과와 총 항목 수를 가져옴
 
-    const last_page = Math.ceil(total / take); // 마지막 페이지 계산
+    if (users.length === 0)
+      throw new BadRequestException(`please check field or waring`);
+    const lastPage = Math.ceil(total / take); // 마지막 페이지 계산
 
-    if (last_page >= page) {
+    if (lastPage >= page) {
       return {
         data: users,
         meta: {
           total,
           current_page: page,
-          last_page,
+          lastPage,
         },
       };
     } else {
-      throw new BadRequestException(`${field} is not exist`);
+      throw new NotFoundException('not exist page');
     }
   }
 
@@ -226,65 +234,79 @@ export class UserService {
   }
 
   async findByQueries(
-    gender: string,
-    field: string,
-    start: string,
-    end: string,
-    waring: number,
-    waringField: string,
-    page: number,
-  ) {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const pageSize = 10;
-    const skip = (page - 1) * pageSize;
+    gender?: string,
+    createdAtField?: string,
+    createdStart?: string,
+    createdEnd?: string,
+    warning?: number,
+    warningField?: string,
+    page?: number,
+    birthField?: string,
+    birthStart?: string,
+    birthEnd?: string,
+  ): Promise<any> {
+    const take = 10;
+    const skip = (page - 1) * take;
 
     let query = this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.report', 'report')
-      .where('user.gender = :gender', { gender: `${gender}` })
-      .andWhere(
-        field === 'createdAt'
-          ? 'user.createdAt BETWEEN :start AND :end'
-          : 'user.birth BETWEEN :start AND :end',
-        {
-          start: startDate,
-          end: endDate,
-        },
-      )
-      .andWhere(
-        waringField === 'LessThanOrEqual'
-          ? 'user.waring <= :waring'
-          : waringField === 'MoreThanOrEqual'
-            ? 'user.waring >= :waring'
-            : waringField === 'Equal'
-              ? 'user.waring = :waring'
-              : null,
-        { waring },
-      )
+      .select([
+        'user.id',
+        'user.kakaoId',
+        'user.image',
+        'user.nickname',
+        'user.gender',
+        'user.birth',
+        'user.waring',
+        'user.createdAt',
+        'COUNT(report.id) AS reportCount',
+      ])
       .skip(skip)
-      .take(pageSize);
+      .take(take)
+      .groupBy('user.id');
 
-    if (field !== 'createdAt' && field !== 'birth') {
-      throw new BadRequestException('Invalid field name');
+    if (createdAtField === 'createdAt' && createdStart && createdEnd) {
+      query = query.andWhere('user.createdAt BETWEEN :start AND :end', {
+        start: createdStart,
+        end: createdEnd,
+      });
+    } else if (birthField === 'birth' && birthStart && birthEnd) {
+      query = query.andWhere('user.birth BETWEEN :start AND :end', {
+        start: birthStart,
+        end: birthEnd,
+      });
+    }
+
+    if (gender) {
+      query = query.andWhere('user.gender = :gender', { gender });
     }
 
     if (
-      waringField !== 'LessThanOrEqual' &&
-      waringField !== 'MoreThanOrEqual' &&
-      waringField !== 'Equal'
+      warningField &&
+      ['LessThanOrEqual', 'MoreThanOrEqual', 'Equal'].includes(warningField) &&
+      warning
     ) {
-      throw new BadRequestException('Invalid field name');
+      if (warningField === 'LessThanOrEqual') {
+        query = query.andWhere('user.waring <= :waring', { waring: warning });
+      } else if (warningField === 'MoreThanOrEqual') {
+        query = query.andWhere('user.waring >= :waring', { waring: warning });
+      } else if (warningField === 'Equal') {
+        query = query.andWhere('user.waring = :waring', { waring: warning });
+      }
     }
 
-    const result = await query.getMany();
-    if (result.length === 0)
-      throw new BadRequestException('please check queries');
+    const [users, total] = await query.getManyAndCount();
+
+    const last_page = Math.ceil(total / take);
 
     return {
-      statusCode: HttpStatus.OK,
-      message: 'success',
-      data: result,
+      data: users,
+      meta: {
+        total,
+        current_page: page || 1,
+        last_page,
+      },
     };
   }
 }
