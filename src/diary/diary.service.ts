@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Diary } from 'src/entity/diary.entity';
 import { UserEntity } from 'src/entity/user.entity';
@@ -17,24 +22,34 @@ export class DiaryService {
     year: string,
     month: string,
     page: number,
-    pageSize: number,
-  ) {
-    const skip = (page - 1) * pageSize;
+  ): Promise<any> {
+    const take = 10;
+    const skip = (page - 1) * take;
 
-    const diaries = await this.diaryRepository
+    const [diaries, total] = await this.diaryRepository
       .createQueryBuilder('diary')
       .where('diary.userId = :userId', { userId })
       .andWhere('YEAR(diary.date) = :year', { year })
       .andWhere('MONTH(diary.date) = :month', { month })
       .orderBy('diary.createdAt', 'DESC')
       .skip(skip)
-      .take(pageSize)
-      .getRawMany();
+      .take(take)
+      .getManyAndCount();
 
-    if (diaries.length === 0)
-      throw new BadRequestException('please check userId, year and month');
+    const lastPage = Math.ceil(total / take);
 
-    return { statusCode: HttpStatus.OK, message: 'success', data: diaries };
+    if (lastPage >= page) {
+      return {
+        data: diaries,
+        meta: {
+          total,
+          page,
+          last_page: lastPage,
+        },
+      };
+    } else {
+      throw new NotFoundException('not exist page');
+    }
   }
 
   async findByContents(contents: string, page: number) {
