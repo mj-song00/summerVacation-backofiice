@@ -155,4 +155,14 @@ export class DiaryService {
       throw new NotFoundException('not exist page');
     }
   }
+
+  async checkWarning(diaryId: number) {
+    const diary = await this.diaryRepository.findOne({
+      where: {
+        id: diaryId,
+      },
+    });
+    const isWarning = diary.waringCount > 0 ? true : false;
+    return isWarning;
+  }
 }

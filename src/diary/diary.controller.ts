@@ -42,4 +42,10 @@ export class DiaryController {
       return this.diaryService.findByWaringCount(+waringCount, field, page);
     }
   }
+  //일기 경고 확인
+  @Get('/check/:diaryId')
+  @Roles(ROLE.USER)
+  checkWarning(@Param('diaryId') diaryId: string) {
+    return this.diaryService.checkWarning(+diaryId);
+  }
 }
