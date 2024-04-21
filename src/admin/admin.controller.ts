@@ -28,7 +28,7 @@ export class AdminController {
   }
 
   @Get('')
-  //@Roles(ROLE.USER)
+  @Roles(ROLE.USER)
   getAdmin() {
     return this.adminService.findAll();
   }

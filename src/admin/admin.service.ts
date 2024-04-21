@@ -22,7 +22,7 @@ export class AdminService {
   ) {}
 
   async create(createAdminDto: CreateAdminDto) {
-    const { email, password } = createAdminDto;
+    const { email, password, owner } = createAdminDto;
     const isExist = await this.adminRepository.findOne({ where: { email } });
     if (isExist) throw new ConflictException('already Exist');
     const salt = parseInt(process.env.SATL);
@@ -31,11 +31,11 @@ export class AdminService {
       const admin = await this.adminRepository.save({
         email,
         password: hashedPassword,
+        owner,
       });
     } catch (e) {
       throw new Error(e);
     }
-
     return { statusCode: HttpStatus.OK, data: 'success' };
   }
 
